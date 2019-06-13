@@ -50,4 +50,19 @@
     <put-attribute name="title" value="Product Detail page" />
     <put-attribute name="body" value="/WEB-INF/views/productDetail.jsp" />
   </definition>
+  
+  <definition name="registerUser" extends="base">
+    <put-attribute name="title" value="Registration page" />
+    <put-attribute name="body" value="/WEB-INF/views/registerUser.jsp" />
+  </definition>
+  
+    <definition name="registerUserSuccess" extends="base">
+    <put-attribute name="title" value="Registration Success page" />
+    <put-attribute name="body" value="/WEB-INF/views/registerUserSuccess.jsp" />
+  </definition>
+  
+   <definition name="cart" extends="base">
+    <put-attribute name="title" value="Cart Information page" />
+    <put-attribute name="body" value="/WEB-INF/views/cart.jsp" />
+  </definition>
 </tiles-definitions>

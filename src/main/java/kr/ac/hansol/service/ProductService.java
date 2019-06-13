@@ -19,20 +19,20 @@ public class ProductService {
 		return productDao.getProducts();
 	}
 
-	public boolean addProduct(Product product) {
-		return productDao.addProduct(product);
+	public void addProduct(Product product) {
+		productDao.addProduct(product);
 	}
 
-	public boolean deleteProduct(int id) {
-		return productDao.deleteProduct(id);
+	public void deleteProduct(Product product) {
+		productDao.deleteProduct(product);
 	}
 
 	public Product getProductById(int id) {
 		return productDao.getProductById(id);
 	}
 
-	public boolean updateProduct(Product product) {
-		return productDao.updateProduct(product);
+	public void updateProduct(Product product) {
+		productDao.updateProduct(product);
 	}
 
 }

@@ -1,103 +1,55 @@
 package kr.ac.hansol.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
-import javax.sql.DataSource;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.ac.hansol.model.Product;
 
 @Repository
+@Transactional
 public class ProductDao {
 
-	
-	private JdbcTemplate jdbcTemplate;
-	
 	@Autowired
-	public void setDataSource(DataSource dataSource) {
-		jdbcTemplate = new JdbcTemplate(dataSource);
-	}
+	private SessionFactory sessionFactory;
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<Product> getProducts() {		
-		String sqlStatement = "select * from product"; // record -> object
-		return jdbcTemplate.query(sqlStatement, new RowMapper<Product>() {
-
-			@Override
-			public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
-				Product product = new Product();
-				product.setId(rs.getInt("id"));
-				product.setName(rs.getString("name"));
-				product.setPrice(rs.getInt("price"));
-				product.setCategory(rs.getString("category"));
-				product.setManufacturer(rs.getString("manufacturer"));
-				product.setUnitInStock(rs.getInt("unitInStock"));
-				product.setDescription(rs.getString("description"));
-				
-				return product;
-			}
-			
-		});
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Product");
+		List<Product> productList = query.list();
+		
+		return productList;
 	}
 
-	public boolean addProduct(Product product) {
-		
-		String name = product.getName();
-		String category = product.getCategory();
-		String manufacturer = product.getManufacturer();
-		int price = product.getPrice();
-		int unitInStock = product.getUnitInStock();
-		String description = product.getDescription();
-		
-		String sqlStatement = "insert into product (name, category, manufacturer, price, unitInStock, description) values (?, ?, ?, ?, ?, ?)";
-		
-		return (jdbcTemplate.update(sqlStatement, new Object[] {name, category, manufacturer, price, unitInStock, description}) == 1);
+	public void addProduct(Product product) {
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(product);
+		session.flush();
 	}
 
-	public boolean deleteProduct(int id) {
-		
-		String sqlStatement = "delete from product where id = ?";
-		
-		return (jdbcTemplate.update(sqlStatement, new Object[] {id}) == 1);
+	public void deleteProduct(Product product) {
+		Session session = sessionFactory.getCurrentSession();
+		session.delete(product);
+		session.flush();
 	}
 
 	public Product getProductById(int id) {
-		String sqlStatement = "select * from product where id = ?"; // record -> object
-		return jdbcTemplate.queryForObject(sqlStatement, new Object[] {id}, new RowMapper<Product>() {
-
-			@Override
-			public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
-				Product product = new Product();
-				product.setId(rs.getInt("id"));
-				product.setPrice(rs.getInt("price"));
-				product.setName(rs.getString("name"));
-				product.setCategory(rs.getString("category"));
-				product.setManufacturer(rs.getString("manufacturer"));
-				product.setUnitInStock(rs.getInt("unitInStock"));
-				product.setDescription(rs.getString("description"));
-				
-				return product;
-			}
-			
-		});
+		Session session = sessionFactory.getCurrentSession();
+		Product product = (Product)session.get(Product.class, id);
+		
+		return product;
 	}
 
-	public boolean updateProduct(Product product) {
-		
-		int id = product.getId();
-		String name = product.getName();
-		String category = product.getCategory();
-		String manufacturer = product.getManufacturer();
-		int price = product.getPrice();
-		int unitInStock = product.getUnitInStock();
-		String description = product.getDescription();
-		
-		String sqlStatement = "update product set name=?, category=?, price=?, manufacturer=?, unitInStock=?, description=?" + "where id=?";
-		
-		return (jdbcTemplate.update(sqlStatement, new Object[] {name, category, price, manufacturer, unitInStock, description, id}) == 1);
+	public void updateProduct(Product product) {
+		Session session = sessionFactory.getCurrentSession();
+		session.saveOrUpdate(product);
+		session.flush();
 	}
 
 	
